@@ -3,24 +3,518 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counter</title>
-    <Style>
-     /* Zayed should toch this loll*/
+    <title>Scientific Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    </Style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background: #1a1a2e;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            padding: 24px;
+            width: 100%;
+            max-width: 380px;
+            overflow: hidden;
+        }
+
+        .header {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 24px;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .display-group {
+            margin-bottom: 24px;
+        }
+
+        .previous-operand {
+            text-align: right;
+            color: #888;
+            font-size: 14px;
+            min-height: 20px;
+            margin-bottom: 8px;
+        }
+
+        .current-display {
+            background: linear-gradient(135deg, #2a2a4e 0%, #3a3a5e 100%);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: right;
+            font-size: 48px;
+            font-weight: 300;
+            color: #ffffff;
+            word-wrap: break-word;
+            word-break: break-all;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .number-btn {
+            background: #2a2a4e;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .number-btn:hover {
+            background: #3a3a5e;
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .operator-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            font-size: 20px;
+        }
+
+        .operator-btn:hover {
+            opacity: 0.9;
+        }
+
+        .function-btn {
+            background: #1e5f8d;
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .function-btn:hover {
+            background: #2a7bb0;
+        }
+
+        .equals-btn {
+            background: linear-gradient(135deg, #00c896 0%, #00a878 100%);
+            color: #ffffff;
+            grid-column: span 2;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .equals-btn:hover {
+            opacity: 0.9;
+        }
+
+        .clear-btn {
+            background: #c73030;
+            color: #ffffff;
+            grid-column: span 2;
+            font-size: 14px;
+        }
+
+        .clear-btn:hover {
+            background: #e03c3c;
+        }
+
+        .delete-btn {
+            background: #e8a500;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background: #f0b300;
+        }
+
+        .toggle-mode {
+            background: #555;
+            color: #ffffff;
+            font-size: 12px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .toggle-mode:hover {
+            background: #666;
+        }
+
+        .advanced-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 12px;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .advanced-grid.show {
+            max-height: 200px;
+            opacity: 1;
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                border-radius: 30px;
+                padding: 16px;
+            }
+
+            .current-display {
+                font-size: 36px;
+                padding: 16px;
+            }
+
+            .buttons-grid {
+                gap: 10px;
+            }
+
+            button {
+                padding: 14px;
+                font-size: 14px;
+                border-radius: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-    
-    <button id="change_title">Change the title to Zayed X Abrar</button>
-    <h1>TEST FOR WORKING GITHUB OR NOT (YOU CAN DELETE IT)</h1>
+    <div class="calculator-container">
+        <div class="header">Zayed X Abrar Calculator</div>
+        
+        <button class="toggle-mode" id="toggleAdvanced">Advanced Mode</button>
+        
+        <div class="display-group">
+            <div class="previous-operand" id="previousOperand"></div>
+            <div class="current-display" id="display">0</div>
+        </div>
+
+        <div class="buttons-grid" id="basicGrid">
+            <!-- Row 1 -->
+            <button class="clear-btn" id="clear">AC</button>
+            <button class="delete-btn" id="delete">DEL</button>
+            <button class="operator-btn" id="divide">÷</button>
+            <button class="operator-btn" id="multiply">×</button>
+
+            <!-- Row 2 -->
+            <button class="number-btn">7</button>
+            <button class="number-btn">8</button>
+            <button class="number-btn">9</button>
+            <button class="operator-btn" id="subtract">−</button>
+
+            <!-- Row 3 -->
+            <button class="number-btn">4</button>
+            <button class="number-btn">5</button>
+            <button class="number-btn">6</button>
+            <button class="operator-btn" id="add">+</button>
+
+            <!-- Row 4 -->
+            <button class="number-btn">1</button>
+            <button class="number-btn">2</button>
+            <button class="number-btn">3</button>
+            <button class="operator-btn" id="percent">%</button>
+
+            <!-- Row 5 -->
+            <button class="number-btn" style="grid-column: span 2;">0</button>
+            <button class="number-btn">.</button>
+            <button class="equals-btn" id="equals">=</button>
+        </div>
+
+        <div class="advanced-grid" id="advancedGrid">
+            <button class="function-btn" id="sin">sin</button>
+            <button class="function-btn" id="cos">cos</button>
+            <button class="function-btn" id="tan">tan</button>
+            <button class="function-btn" id="pi">π</button>
+            
+            <button class="function-btn" id="sqrt">√</button>
+            <button class="function-btn" id="power">x²</button>
+            <button class="function-btn" id="power3">x³</button>
+            <button class="function-btn" id="log">log</button>
+            
+            <button class="function-btn" id="ln">ln</button>
+            <button class="function-btn" id="reciprocal">1/x</button>
+            <button class="function-btn" id="factorial">n!</button>
+            <button class="function-btn" id="rad">RAD</button>
+        </div>
+    </div>
 
     <script>
-/*zayed should touch it loll fr*/
-const ct = document.getElementById("change_title")
-const title = document.getElementsByTagName("title")[0];
-ct.addEventListener("click", () => {
-    title.textContent = "Zayed X Abrar"
-})
+        class Calculator {
+            constructor(previousOperandElement, currentOperandElement) {
+                this.previousOperandElement = previousOperandElement;
+                this.currentOperandElement = currentOperandElement;
+                this.clear();
+                this.radianMode = false;
+            }
+
+            clear() {
+                this.currentOperand = '';
+                this.previousOperand = '';
+                this.operation = undefined;
+                this.updateDisplay();
+            }
+
+            delete() {
+                this.currentOperand = this.currentOperand.toString().slice(0, -1);
+                this.updateDisplay();
+            }
+
+            appendNumber(number) {
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                this.currentOperand = this.currentOperand.toString() + number.toString();
+                this.updateDisplay();
+            }
+
+            chooseOperation(operation) {
+                if (this.currentOperand === '') return;
+                if (this.previousOperand !== '') {
+                    this.compute();
+                }
+                this.operation = operation;
+                this.previousOperand = this.currentOperand;
+                this.currentOperand = '';
+                this.updateDisplay();
+            }
+
+            compute() {
+                let computation;
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(prev) || isNaN(current)) return;
+
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '−':
+                        computation = prev - current;
+                        break;
+                    case '×':
+                        computation = prev * current;
+                        break;
+                    case '÷':
+                        computation = prev / current;
+                        break;
+                    case '%':
+                        computation = prev % current;
+                        break;
+                    default:
+                        return;
+                }
+                this.currentOperand = computation.toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                this.currentOperandElement.innerText = this.currentOperand || '0';
+                if (this.operation != null) {
+                    this.previousOperandElement.innerText = 
+                        `${this.previousOperand} ${this.operation}`;
+                } else {
+                    this.previousOperandElement.innerText = '';
+                }
+            }
+
+            sqrt() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                this.currentOperand = Math.sqrt(current).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            square() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                this.currentOperand = (current * current).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            cube() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                this.currentOperand = (current * current * current).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            reciprocal() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current) || current === 0) return;
+                this.currentOperand = (1 / current).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            factorial() {
+                const current = parseInt(this.currentOperand);
+                if (isNaN(current) || current < 0) return;
+                let result = 1;
+                for (let i = 2; i <= current; i++) {
+                    result *= i;
+                }
+                this.currentOperand = result.toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            sin() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                const angle = this.radianMode ? current : (current * Math.PI / 180);
+                this.currentOperand = Math.sin(angle).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            cos() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                const angle = this.radianMode ? current : (current * Math.PI / 180);
+                this.currentOperand = Math.cos(angle).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            tan() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current)) return;
+                const angle = this.radianMode ? current : (current * Math.PI / 180);
+                this.currentOperand = Math.tan(angle).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            log() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current) || current <= 0) return;
+                this.currentOperand = Math.log10(current).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            ln() {
+                const current = parseFloat(this.currentOperand);
+                if (isNaN(current) || current <= 0) return;
+                this.currentOperand = Math.log(current).toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.updateDisplay();
+            }
+
+            appendPi() {
+                this.currentOperand = (Math.PI).toString();
+                this.updateDisplay();
+            }
+
+            toggleRadianMode() {
+                this.radianMode = !this.radianMode;
+                alert(this.radianMode ? 'Radian Mode' : 'Degree Mode');
+            }
+        }
+
+        const calculator = new Calculator(
+            document.getElementById('previousOperand'),
+            document.getElementById('display')
+        );
+
+        // Number buttons
+        document.querySelectorAll('.number-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                calculator.appendNumber(button.innerText);
+            });
+        });
+
+        // Operations
+        document.getElementById('add').addEventListener('click', () => calculator.chooseOperation('+'));
+        document.getElementById('subtract').addEventListener('click', () => calculator.chooseOperation('−'));
+        document.getElementById('multiply').addEventListener('click', () => calculator.chooseOperation('×'));
+        document.getElementById('divide').addEventListener('click', () => calculator.chooseOperation('÷'));
+        document.getElementById('percent').addEventListener('click', () => calculator.chooseOperation('%'));
+
+        // Functions
+        document.getElementById('equals').addEventListener('click', () => calculator.compute());
+        document.getElementById('clear').addEventListener('click', () => calculator.clear());
+        document.getElementById('delete').addEventListener('click', () => calculator.delete());
+
+        // Advanced functions
+        document.getElementById('sqrt').addEventListener('click', () => calculator.sqrt());
+        document.getElementById('power').addEventListener('click', () => calculator.square());
+        document.getElementById('power3').addEventListener('click', () => calculator.cube());
+        document.getElementById('reciprocal').addEventListener('click', () => calculator.reciprocal());
+        document.getElementById('factorial').addEventListener('click', () => calculator.factorial());
+        document.getElementById('sin').addEventListener('click', () => calculator.sin());
+        document.getElementById('cos').addEventListener('click', () => calculator.cos());
+        document.getElementById('tan').addEventListener('click', () => calculator.tan());
+        document.getElementById('log').addEventListener('click', () => calculator.log());
+        document.getElementById('ln').addEventListener('click', () => calculator.ln());
+        document.getElementById('pi').addEventListener('click', () => calculator.appendPi());
+        document.getElementById('rad').addEventListener('click', () => calculator.toggleRadianMode());
+
+        // Toggle advanced mode
+        document.getElementById('toggleAdvanced').addEventListener('click', () => {
+            const advancedGrid = document.getElementById('advancedGrid');
+            advancedGrid.classList.toggle('show');
+            const btn = document.getElementById('toggleAdvanced');
+            btn.innerText = advancedGrid.classList.contains('show') ? 'Basic Mode' : 'Advanced Mode';
+        });
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '0' && e.key <= '9') calculator.appendNumber(e.key);
+            if (e.key === '.') calculator.appendNumber('.');
+            if (e.key === '+') calculator.chooseOperation('+');
+            if (e.key === '-') calculator.chooseOperation('−');
+            if (e.key === '*') calculator.chooseOperation('×');
+            if (e.key === '/') { e.preventDefault(); calculator.chooseOperation('÷'); }
+            if (e.key === 'Enter' || e.key === '=') calculator.compute();
+            if (e.key === 'Backspace') calculator.delete();
+            if (e.key === 'Escape') calculator.clear();
+        });
     </script>
 </body>
 </html>
