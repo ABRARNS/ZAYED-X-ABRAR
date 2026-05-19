@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,29 +11,16 @@
 </head>
 <body>
     
-    
+    <button id="change_title">Change the title to Zayed X Abrar</button>
+    <h1>TEST FOR WORKING GITHUB OR NOT (YOU CAN DELETE IT)</h1>
 
     <script>
 //ZAyed should not touch this
+const ct = document.getElementById("change_title")
+const title = document.getElementsByTagName("title")[0];
+ct.addEventListener("click", () => {
+    title.textContent = "Zayed X Abrar"
+})
     </script>
 </body>
 </html>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Counter</title>
-</head>
-<body>
-    <button id="change_title">
-        Change Title
-    </button>
-
-    <script>
-        
-    </script>
-</body>
-</html>
->>>>>>> a4df718e17a5e57e22f8c3e7e65dd2f79352ac43
